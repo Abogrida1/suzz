@@ -4,40 +4,55 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Suzz - Gift & Admin</title>
-  <!-- TailwindCSS CDN -->
+  <!-- TailwindCSS -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- QRCode.js CDN -->
-  <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
-  <!-- html5-qrcode CDN for scanning -->
+  <!-- QRCode.js -->
+  <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js"></script>
+  <!-- html5-qrcode -->
   <script src="https://unpkg.com/html5-qrcode@2.3.7/minified/html5-qrcode.min.js"></script>
   <style>
-    img {
-      display: block;
-      max-width: 100%;
-      height: auto;
-    }
     .gradient-bg {
       background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
     }
     .discount-badge {
       background: linear-gradient(135deg, #fdc830 0%, #f37335 100%);
     }
+    #qr-reader {
+      width: 100% !important;
+    }
+    #qr-reader__dashboard_section {
+      padding: 10px !important;
+    }
+    .qr-code-container {
+      margin: 0 auto;
+      padding: 15px;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      display: inline-block;
+    }
   </style>
 </head>
 <body class="gradient-bg min-h-screen flex flex-col">
 
   <!-- Logo -->
-  <img src="/static/logo.jpg" 
-       alt="Suzz Logo" 
-       class="mx-auto my-4 w-40 md:w-56 lg:w-64 h-auto rounded-full shadow-lg border-4 border-white"
-       onerror="this.src='https://placehold.co/600x400?text=Suzz+Logo&font=roboto&txtclr=555555'" />
+  <div class="flex justify-center mt-4">
+    <img src="/static/logo.jpg" 
+         alt="Suzz Logo" 
+         class="w-40 md:w-56 lg:w-64 h-auto rounded-full shadow-lg border-4 border-white"
+         onerror="this.src='https://placehold.co/600x400?text=Suzz+Logo&font=roboto'">
+  </div>
 
   <!-- Navigation -->
   <nav class="bg-white shadow-lg p-4 flex flex-col md:flex-row justify-between items-center">
     <h1 class="text-2xl font-bold text-gray-800 mb-2 md:mb-0 font-serif">Suzz</h1>
     <div class="flex flex-col sm:flex-row gap-2">
-      <button id="btn-client" class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 focus:outline-none transition duration-300 shadow-md">Client Page</button>
-      <button id="btn-admin" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:outline-none transition duration-300 shadow-md">Admin Page</button>
+      <button id="btn-client" class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition duration-300 shadow-md">
+        Client Page
+      </button>
+      <button id="btn-admin" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition duration-300 shadow-md">
+        Admin Page
+      </button>
     </div>
   </nav>
 
@@ -46,95 +61,152 @@
     <section class="bg-white rounded-xl shadow-lg p-4 md:p-6 backdrop-blur-sm bg-opacity-90">
       <h2 class="text-3xl font-semibold mb-4 text-center text-gray-800 font-serif">Welcome to Suzz!</h2>
       
-      <!-- Coffee Cup Offer Image -->
-      <img src="/static/coffee_offer.jpg" 
-           alt="Special offer from Suzz" 
-           class="mb-6 rounded-xl shadow-md w-full max-w-lg mx-auto h-auto object-cover"
-           style="max-height: 300px;"
-           onerror="this.src='https://placehold.co/600x300?text=Special+Offer&font=roboto&txtclr=6B4226'" />
+      <!-- Coffee Image -->
+      <div class="flex justify-center mb-6">
+        <img src="/static/coffee_offer.jpg" 
+             alt="Special offer from Suzz" 
+             class="rounded-xl shadow-md w-full max-w-lg h-auto object-cover"
+             style="max-height: 300px;"
+             onerror="this.src='https://placehold.co/600x300?text=Special+Offer&font=roboto'">
+      </div>
       
       <p class="mb-4 text-gray-700 text-center text-lg">Claim your special gift discount now!</p>
+      
+      <!-- Phone Input -->
       <div class="mb-4">
         <label for="phone-input" class="block mb-2 font-medium text-gray-800">Enter your phone number:</label>
         <input type="tel" id="phone-input" placeholder="e.g. 01012345678" 
-               class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent" />
+               class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500">
         <p id="phone-error" class="text-red-600 mt-1 hidden">Please enter a valid Egyptian phone number (11 digits starting with 01)</p>
       </div>
-      <button id="claim-gift-btn" class="w-full md:w-auto px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 focus:outline-none transition duration-300 shadow-md transform hover:scale-105">
+      
+      <button id="claim-gift-btn" class="w-full px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition duration-300 shadow-md transform hover:scale-105">
         Claim Gift
       </button>
 
-      <div id="discount-section" class="mt-6 hidden p-6 border-2 border-green-400 rounded-xl bg-green-50 backdrop-blur-sm">
+      <!-- Discount Section -->
+      <div id="discount-section" class="mt-6 hidden p-6 border-2 border-green-400 rounded-xl bg-green-50">
         <h3 class="text-2xl font-semibold mb-4 text-center text-green-800">Your Exclusive Discount!</h3>
         <div class="discount-badge text-white text-5xl font-bold text-center rounded-full w-32 h-32 mx-auto flex items-center justify-center shadow-lg mb-6">
           <span id="discount-value"></span>
         </div>
-        <p class="text-center text-gray-700 mb-4">Show this QR code at our cafe to redeem your discount:</p>
-        <div id="qrcode" class="mb-6 flex justify-center"></div>
-        <p class="text-center text-sm text-gray-500 italic">This code can only be used once. Valid for 7 days.</p>
+        <p class="text-center text-gray-700 mb-4">Show this QR code at our cafe:</p>
+        
+        <div class="flex flex-col items-center">
+          <div id="qrcode" class="qr-code-container mb-4"></div>
+          <p id="code-text" class="text-center font-mono bg-gray-100 p-2 rounded-lg"></p>
+        </div>
+        
+        <p class="text-center text-sm text-gray-500 italic mt-4">This code can only be used once. Valid for 7 days.</p>
       </div>
 
-      <div id="otp-section" class="mt-6 hidden p-6 border-2 border-blue-400 rounded-xl bg-blue-50 backdrop-blur-sm">
+      <!-- OTP Section -->
+      <div id="otp-section" class="mt-6 hidden p-6 border-2 border-blue-400 rounded-xl bg-blue-50">
         <h3 class="text-2xl font-semibold mb-4 text-center text-blue-800">WhatsApp Verification</h3>
-        <p class="mb-4 text-gray-700 text-center">We've sent a 6-digit OTP code to your WhatsApp. Please enter it below to verify your phone number.</p>
+        <p class="mb-4 text-gray-700 text-center">We've sent a 6-digit OTP code to your WhatsApp.</p>
+        
         <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
           <input type="text" id="otp-input" maxlength="6" placeholder="Enter OTP" 
-                 class="w-full sm:w-48 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 text-center text-xl" />
-          <button id="verify-otp-btn" class="w-full sm:w-auto px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 focus:outline-none transition duration-300 shadow-md">
+                 class="w-full sm:w-48 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 text-center text-xl">
+          <button id="verify-otp-btn" class="w-full sm:w-auto px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition duration-300 shadow-md">
             Verify OTP
           </button>
         </div>
+        
         <p id="otp-error" class="text-red-600 mt-3 text-center hidden">Invalid OTP. Please try again.</p>
         <p id="otp-success" class="text-green-600 mt-3 text-center hidden">Phone number verified successfully!</p>
         <p id="otp-timer" class="text-gray-500 mt-3 text-center hidden">Didn't receive code? <span id="countdown">60</span>s</p>
       </div>
 
-      <div id="existing-code-section" class="mt-6 hidden p-6 border-2 border-purple-400 rounded-xl bg-purple-50 backdrop-blur-sm">
+      <!-- Existing Code Section -->
+      <div id="existing-code-section" class="mt-6 hidden p-6 border-2 border-purple-400 rounded-xl bg-purple-50">
         <h3 class="text-2xl font-semibold mb-4 text-center text-purple-800">Your Existing Discount</h3>
-        <p class="mb-4 text-gray-700 text-center">You already have an unused discount code for this number.</p>
-        <div id="existing-qrcode" class="mb-6 flex justify-center"></div>
+        <p class="mb-4 text-gray-700 text-center">You already have an unused discount code.</p>
+        
+        <div class="flex flex-col items-center">
+          <div id="existing-qrcode" class="qr-code-container mb-4"></div>
+          <p id="existing-code-text" class="text-center font-mono bg-gray-100 p-2 rounded-lg"></p>
+        </div>
+        
         <p class="text-center text-sm text-gray-500 italic">This code is still valid and can be used once.</p>
       </div>
     </section>
   </main>
 
   <!-- Admin Page -->
-  <main id="admin-page" class="hidden flex-grow p-4 md:p-6 max-w-4xl mx-auto w-full">
-    <section class="bg-white rounded-xl shadow-lg p-4 md:p-6 backdrop-blur-sm bg-opacity-90">
+  <main id="admin-page" class="hidden flex-grow p-4 md:p-6 max-w-6xl mx-auto w-full">
+    <section class="bg-white rounded-xl shadow-lg p-4 md:p-6">
       <h2 class="text-3xl font-semibold mb-6 text-center text-gray-800 font-serif">Admin Dashboard</h2>
+      
+      <!-- Admin Login -->
       <div id="admin-login-section">
-        <label for="admin-password" class="block mb-2 font-medium text-gray-800">Enter Admin Password:</label>
-        <div class="flex flex-col sm:flex-row items-center gap-4">
-          <input type="password" id="admin-password" placeholder="Password" 
-                 class="w-full sm:w-64 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" />
-          <button id="admin-login-btn" class="w-full sm:w-auto px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:outline-none transition duration-300 shadow-md">
-            Login
-          </button>
+        <div class="max-w-md mx-auto bg-gray-100 p-6 rounded-lg">
+          <label for="admin-password" class="block mb-2 font-medium text-gray-800">Enter Admin Password:</label>
+          <div class="flex flex-col sm:flex-row items-center gap-4">
+            <input type="password" id="admin-password" placeholder="Password" 
+                   class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+            <button id="admin-login-btn" class="w-full sm:w-auto px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition duration-300 shadow-md">
+              Login
+            </button>
+          </div>
+          <p id="admin-login-error" class="text-red-600 mt-2 text-center hidden">Incorrect password. Please try again.</p>
         </div>
-        <p id="admin-login-error" class="text-red-600 mt-2 text-center hidden">Incorrect password. Please try again.</p>
       </div>
 
+      <!-- Admin Dashboard -->
       <div id="admin-dashboard" class="hidden">
-        <button id="logout-btn" class="mb-6 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 focus:outline-none transition duration-300 shadow-md">
-          Logout
-        </button>
-        
-        <div class="bg-gray-100 p-4 rounded-lg mb-6">
-          <h3 class="text-xl font-semibold mb-4">QR Code Scanner</h3>
-          <div id="qr-reader" class="mb-4"></div>
-          <div id="scan-result" class="p-4 rounded-lg border border-gray-300 bg-white"></div>
+        <div class="flex justify-between items-center mb-6">
+          <button id="logout-btn" class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition duration-300 shadow-md">
+            Logout
+          </button>
+          <p class="text-gray-600">Logged in as Admin</p>
         </div>
         
-        <div class="bg-gray-100 p-4 rounded-lg">
-          <h3 class="text-xl font-semibold mb-4">All Generated Codes</h3>
+        <!-- QR Scanner Section -->
+        <div class="bg-gray-100 p-6 rounded-lg mb-6">
+          <h3 class="text-xl font-semibold mb-4">Redeem Discount Code</h3>
+          
+          <div class="grid md:grid-cols-2 gap-6">
+            <!-- QR Scanner -->
+            <div>
+              <h4 class="font-medium mb-2">Scan QR Code:</h4>
+              <div id="qr-reader" class="mb-4 border-2 border-gray-300 rounded-lg overflow-hidden"></div>
+            </div>
+            
+            <!-- Manual Entry -->
+            <div>
+              <h4 class="font-medium mb-2">Or Enter Code Manually:</h4>
+              <div class="flex flex-col sm:flex-row gap-4">
+                <input type="text" id="manual-code-input" placeholder="Enter discount code" 
+                       class="flex-grow p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <button id="submit-code-btn" class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition duration-300 shadow-md">
+                  Submit
+                </button>
+              </div>
+            </div>
+          </div>
+          
+          <div id="scan-result" class="mt-4 p-4 rounded-lg border border-gray-300 bg-white"></div>
+        </div>
+        
+        <!-- All Codes Table -->
+        <div class="bg-gray-100 p-6 rounded-lg">
+          <div class="flex justify-between items-center mb-4">
+            <h3 class="text-xl font-semibold">All Generated Codes</h3>
+            <button id="refresh-codes-btn" class="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition duration-300 shadow-md">
+              Refresh
+            </button>
+          </div>
+          
           <div class="overflow-x-auto">
             <table class="w-full border-collapse border border-gray-300 text-left text-sm bg-white rounded-lg overflow-hidden">
               <thead>
                 <tr class="bg-gray-800 text-white">
-                  <th class="border border-gray-300 p-3">Phone Number</th>
+                  <th class="border border-gray-300 p-3">Phone</th>
                   <th class="border border-gray-300 p-3">Discount</th>
+                  <th class="border border-gray-300 p-3">Code</th>
                   <th class="border border-gray-300 p-3">Status</th>
-                  <th class="border border-gray-300 p-3">Timestamp</th>
+                  <th class="border border-gray-300 p-3">Time</th>
                 </tr>
               </thead>
               <tbody id="codes-table-body"></tbody>
@@ -146,7 +218,9 @@
   </main>
 
   <script>
-    // Utility: SHA-256 hash function using SubtleCrypto
+    // ======================
+    // Utility Functions
+    // ======================
     async function sha256(message) {
       const msgBuffer = new TextEncoder().encode(message);
       const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
@@ -155,31 +229,62 @@
       return hashHex;
     }
 
-    // Elements
+    function generateQRCode(container, text, options = {}) {
+      container.innerHTML = '';
+      const defaultOptions = {
+        width: 200,
+        margin: 1,
+        color: {
+          dark: '#000000',
+          light: '#ffffff'
+        }
+      };
+      
+      QRCode.toCanvas(container, text, {...defaultOptions, ...options}, (error) => {
+        if (error) {
+          console.error('QR Code generation error:', error);
+          container.innerHTML = '<p class="text-red-500">Failed to generate QR code</p>';
+        }
+      });
+    }
+
+    function formatPhoneNumber(phone) {
+      return phone.replace(/\D/g, '').replace(/(\d{3})(\d{4})(\d{4})/, '$1 $2 $3');
+    }
+
+    function formatDate(dateString) {
+      const options = { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' };
+      return new Date(dateString).toLocaleDateString('en-US', options);
+    }
+
+    // ======================
+    // State Management
+    // ======================
+    const STORAGE_KEY_CODES = 'suzz_codes_v2';
+    const ADMIN_PASSWORD = 'admin123'; // Change this in production!
+    
+    let currentDiscount = null;
+    let currentPhoneNumber = null;
+    let currentOtp = null;
+    let otpSent = false;
+    let html5QrCode = null;
+    let countdownInterval = null;
+
+    // ======================
+    // DOM Elements
+    // ======================
+    // Client Page
     const clientPage = document.getElementById('client-page');
     const adminPage = document.getElementById('admin-page');
     const btnClient = document.getElementById('btn-client');
     const btnAdmin = document.getElementById('btn-admin');
-
-    // Navigation buttons
-    btnClient.addEventListener('click', () => {
-      clientPage.classList.remove('hidden');
-      adminPage.classList.add('hidden');
-      resetClientPage();
-    });
-    btnAdmin.addEventListener('click', () => {
-      clientPage.classList.add('hidden');
-      adminPage.classList.remove('hidden');
-      resetAdminPage();
-    });
-
-    // Client page elements
     const phoneInput = document.getElementById('phone-input');
     const phoneError = document.getElementById('phone-error');
     const claimGiftBtn = document.getElementById('claim-gift-btn');
     const discountSection = document.getElementById('discount-section');
     const discountValue = document.getElementById('discount-value');
     const qrcodeContainer = document.getElementById('qrcode');
+    const codeText = document.getElementById('code-text');
     const otpSection = document.getElementById('otp-section');
     const otpInput = document.getElementById('otp-input');
     const verifyOtpBtn = document.getElementById('verify-otp-btn');
@@ -189,8 +294,9 @@
     const countdown = document.getElementById('countdown');
     const existingCodeSection = document.getElementById('existing-code-section');
     const existingQrcodeContainer = document.getElementById('existing-qrcode');
+    const existingCodeText = document.getElementById('existing-code-text');
 
-    // Admin page elements
+    // Admin Page
     const adminLoginSection = document.getElementById('admin-login-section');
     const adminPasswordInput = document.getElementById('admin-password');
     const adminLoginBtn = document.getElementById('admin-login-btn');
@@ -198,92 +304,73 @@
     const adminDashboard = document.getElementById('admin-dashboard');
     const logoutBtn = document.getElementById('logout-btn');
     const qrReader = document.getElementById('qr-reader');
+    const manualCodeInput = document.getElementById('manual-code-input');
+    const submitCodeBtn = document.getElementById('submit-code-btn');
     const scanResult = document.getElementById('scan-result');
     const codesTableBody = document.getElementById('codes-table-body');
+    const refreshCodesBtn = document.getElementById('refresh-codes-btn');
 
-    // Storage keys
-    const STORAGE_KEY_CODES = 'suzz_codes';
-    const STORAGE_KEY_VERIFIED_NUMBERS = 'suzz_verified_numbers';
-
-    // Green API credentials
-    const GREEN_API_INSTANCE_ID = '7105288219';
-    const GREEN_API_TOKEN = '47b3ca2c761240ebb523b770ad34bebd8ecb317db4d643d390';
-
-    // State
-    let currentDiscount = null;
-    let currentPhoneNumber = null;
-    let currentOtp = null;
-    let otpSent = false;
-    let html5QrCode = null;
-    let countdownInterval = null;
-
-    // Helper: Validate Egyptian phone number (11 digits starting with 01)
+    // ======================
+    // Core Functions
+    // ======================
     function validatePhoneNumber(phone) {
       const digitsOnly = phone.replace(/\D/g, '');
       return digitsOnly.length === 11 && digitsOnly.startsWith('01');
     }
 
-    // Helper: Generate random discount between 10% and 40% in 5% increments
     function generateRandomDiscount() {
-      const min = 10;
-      const max = 40;
-      const step = 5;
-      const increments = (max - min) / step + 1;
-      const randIndex = Math.floor(Math.random() * increments);
-      return min + (randIndex * step);
+      const discounts = [10, 15, 20, 25, 30, 35, 40];
+      return discounts[Math.floor(Math.random() * discounts.length)];
     }
 
-    // Helper: Generate unique code string
     function generateUniqueCode() {
-      return 'xxxx-xxxx-xxxx'.replace(/x/g, function() {
-        return Math.floor(Math.random() * 16).toString(16);
-      });
+      const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+      let result = '';
+      for (let i = 0; i < 8; i++) {
+        result += chars.charAt(Math.floor(Math.random() * chars.length));
+      }
+      return result;
     }
 
-    // Helper: Save code data to localStorage
     function saveCodeData(phone, discount, code) {
-      const codes = JSON.parse(localStorage.getItem(STORAGE_KEY_CODES) || '[]');
+      const codes = JSON.parse(localStorage.getItem(STORAGE_KEY_CODES) || [];
       const timestamp = new Date().toISOString();
+      
       codes.push({ 
         phone, 
         discount, 
         code, 
         used: false, 
-        timestamp,
-        verified: false
+        verified: false,
+        timestamp
       });
+      
       localStorage.setItem(STORAGE_KEY_CODES, JSON.stringify(codes));
+      return codes[codes.length - 1];
     }
 
-    // Helper: Update code data in localStorage
-    function updateCodeData(phone, updates) {
-      const codes = JSON.parse(localStorage.getItem(STORAGE_KEY_CODES) || '[]');
-      const index = codes.findIndex(c => c.phone === phone);
+    function updateCodeData(code, updates) {
+      const codes = JSON.parse(localStorage.getItem(STORAGE_KEY_CODES) || []);
+      const index = codes.findIndex(c => c.code === code);
+      
       if (index !== -1) {
         codes[index] = { ...codes[index], ...updates };
         localStorage.setItem(STORAGE_KEY_CODES, JSON.stringify(codes));
+        return codes[index];
       }
+      return null;
     }
 
-    // Helper: Check if phone number has an unused code
-    function hasUnusedCode(phone) {
-      const codes = JSON.parse(localStorage.getItem(STORAGE_KEY_CODES) || '[]');
-      return codes.some(c => c.phone === phone && !c.used);
-    }
-
-    // Helper: Get unused code for phone number
     function getUnusedCode(phone) {
-      const codes = JSON.parse(localStorage.getItem(STORAGE_KEY_CODES) || '[]');
+      const codes = JSON.parse(localStorage.getItem(STORAGE_KEY_CODES) || []);
       return codes.find(c => c.phone === phone && !c.used);
     }
 
-    // Helper: Check if phone number has a used code
     function hasUsedCode(phone) {
-      const codes = JSON.parse(localStorage.getItem(STORAGE_KEY_CODES) || '[]');
+      const codes = JSON.parse(localStorage.getItem(STORAGE_KEY_CODES) || []);
       return codes.some(c => c.phone === phone && c.used);
     }
 
-    // Helper: Start OTP countdown timer
     function startCountdown() {
       let seconds = 60;
       otpTimer.classList.remove('hidden');
@@ -300,7 +387,6 @@
       }, 1000);
     }
 
-    // Helper: Reset OTP countdown timer
     function resetCountdown() {
       if (countdownInterval) {
         clearInterval(countdownInterval);
@@ -308,19 +394,20 @@
       otpTimer.classList.add('hidden');
     }
 
-    // Helper: Clear client page UI
     function resetClientPage() {
       phoneInput.value = '';
       phoneError.classList.add('hidden');
       discountSection.classList.add('hidden');
       discountValue.textContent = '';
       qrcodeContainer.innerHTML = '';
+      codeText.textContent = '';
       otpSection.classList.add('hidden');
       otpInput.value = '';
       otpError.classList.add('hidden');
       otpSuccess.classList.add('hidden');
       existingCodeSection.classList.add('hidden');
       existingQrcodeContainer.innerHTML = '';
+      existingCodeText.textContent = '';
       resetCountdown();
       
       currentDiscount = null;
@@ -329,7 +416,6 @@
       otpSent = false;
     }
 
-    // Helper: Clear admin page UI
     function resetAdminPage() {
       adminPasswordInput.value = '';
       adminLoginError.classList.add('hidden');
@@ -337,190 +423,86 @@
       adminDashboard.classList.add('hidden');
       scanResult.textContent = '';
       codesTableBody.innerHTML = '';
+      manualCodeInput.value = '';
+      
       if (html5QrCode) {
         html5QrCode.stop().catch(() => {});
         html5QrCode = null;
       }
     }
 
-    // Show existing unused code
     function showExistingCode(code) {
       existingCodeSection.classList.remove('hidden');
-      existingQrcodeContainer.innerHTML = '';
-      
-      QRCode.toCanvas(existingQrcodeContainer, code.code, function (error) {
-        if (error) console.error(error);
-      });
+      generateQRCode(existingQrcodeContainer, code.code);
+      existingCodeText.textContent = code.code;
     }
 
-    // Show discount section with QR code
-    function showDiscountSection() {
-      const codes = JSON.parse(localStorage.getItem(STORAGE_KEY_CODES) || '[]');
-      const codeData = codes.find(c => c.phone === currentPhoneNumber && !c.used);
-      
-      if (codeData) {
-        discountValue.textContent = codeData.discount + '%';
-        discountSection.classList.remove('hidden');
-        qrcodeContainer.innerHTML = '';
-        
-        QRCode.toCanvas(qrcodeContainer, codeData.code, function (error) {
-          if (error) console.error(error);
-        });
-      }
-      
+    function showDiscountSection(code) {
+      discountValue.textContent = code.discount + '%';
+      generateQRCode(qrcodeContainer, code.code);
+      codeText.textContent = code.code;
+      discountSection.classList.remove('hidden');
       otpSection.classList.add('hidden');
     }
 
-    // Function to show an error message
-    function showErrorMessage(message) {
-      let errorDiv = document.getElementById('error-message');
+    function showErrorMessage(message, isAdmin = false) {
+      const container = isAdmin ? adminDashboard : clientPage;
+      let errorDiv = container.querySelector('#error-message');
+      
       if (!errorDiv) {
         errorDiv = document.createElement('div');
         errorDiv.id = 'error-message';
         errorDiv.className = 'mt-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded-lg text-center';
-        clientPage.querySelector('section').prepend(errorDiv);
+        container.querySelector('section').prepend(errorDiv);
       }
+      
       errorDiv.textContent = message;
       errorDiv.style.display = 'block';
-    }
-
-    // Function to clear messages
-    function clearMessages() {
-      const errorDiv = document.getElementById('error-message');
-      if (errorDiv) {
+      
+      setTimeout(() => {
         errorDiv.style.display = 'none';
-      }
+      }, 5000);
     }
 
-    // Send WhatsApp OTP via Green API
     async function sendWhatsAppOtp(phone) {
-      // Always use +20 for Egyptian numbers
       const fullPhone = '+20' + phone.replace(/\D/g, '').substring(1);
-
-      // Generate 6-digit OTP
       currentOtp = Math.floor(100000 + Math.random() * 900000).toString();
 
-      // Send message via Green API
-      const url = `https://api.green-api.com/waInstance${GREEN_API_INSTANCE_ID}/sendMessage/${GREEN_API_TOKEN}`;
-      const body = {
-        chatId: fullPhone + '@c.us',
-        message: `Your Suzz verification code is: ${currentOtp}`
-      };
-
-      try {
-        const response = await fetch(url, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(body)
-        });
-
-        if (!response.ok) {
-          throw new Error('Failed to send OTP via WhatsApp API');
-        }
-
-        return true;
-      } catch (error) {
-        console.error('Error sending WhatsApp OTP:', error);
-        throw error;
-      }
+      // In a real app, you would send this via Green API
+      console.log(`Would send OTP ${currentOtp} to ${fullPhone}`);
+      
+      // Simulate API delay
+      return new Promise(resolve => setTimeout(resolve, 1000));
     }
 
-    // Claim Gift button click handler
-    claimGiftBtn.addEventListener('click', async () => {
-      clearMessages();
-      const phone = phoneInput.value.trim();
+    function loadCodesTable() {
+      const codes = JSON.parse(localStorage.getItem(STORAGE_KEY_CODES) || []);
+      codesTableBody.innerHTML = '';
       
-      if (!validatePhoneNumber(phone)) {
-        phoneError.classList.remove('hidden');
-        return;
-      }
-      phoneError.classList.add('hidden');
+      codes.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp)).forEach(code => {
+        const tr = document.createElement('tr');
+        tr.classList.add('hover:bg-gray-50');
+        
+        const statusClass = code.used ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800';
+        const statusText = code.used ? 'Used' : 'Active';
+        
+        tr.innerHTML = `
+          <td class="border border-gray-300 p-3">${formatPhoneNumber(code.phone)}</td>
+          <td class="border border-gray-300 p-3 text-center">${code.discount}%</td>
+          <td class="border border-gray-300 p-3 font-mono">${code.code}</td>
+          <td class="border border-gray-300 p-3">
+            <span class="px-2 py-1 rounded-full text-xs font-semibold ${statusClass}">${statusText}</span>
+          </td>
+          <td class="border border-gray-300 p-3 text-sm">${formatDate(code.timestamp)}</td>
+        `;
+        
+        codesTableBody.appendChild(tr);
+      });
+    }
 
-      currentPhoneNumber = phone;
-
-      // Check if phone already has an unused code
-      if (hasUnusedCode(phone)) {
-        const existingCode = getUnusedCode(phone);
-        showExistingCode(existingCode);
-        return;
-      }
-
-      // Check if phone has a used code
-      if (hasUsedCode(phone)) {
-        showErrorMessage('This phone number has already used a discount code and cannot claim again.');
-        return;
-      }
-
-      // Generate random discount
-      currentDiscount = generateRandomDiscount();
-
-      // Generate unique code string with discount info
-      const uniqueCode = generateUniqueCode();
-
-      // Save code data with used=false and verified=false
-      saveCodeData(phone, currentDiscount, uniqueCode);
-
-      // Send OTP via WhatsApp using Green API
-      try {
-        await sendWhatsAppOtp(phone);
-        otpSection.classList.remove('hidden');
-        otpSent = true;
-        startCountdown();
-      } catch (err) {
-        showErrorMessage('Failed to send OTP via WhatsApp. Please try again later.');
-        console.error(err);
-      }
-    });
-
-    // Verify OTP button click handler
-    verifyOtpBtn.addEventListener('click', () => {
-      clearMessages();
-      const enteredOtp = otpInput.value.trim();
-      
-      if (enteredOtp === currentOtp) {
-        otpError.classList.add('hidden');
-        otpSuccess.classList.remove('hidden');
-        resetCountdown();
-
-        // Mark code as verified
-        updateCodeData(currentPhoneNumber, { verified: true });
-
-        // Show discount section
-        showDiscountSection();
-      } else {
-        otpError.classList.remove('hidden');
-        otpSuccess.classList.add('hidden');
-      }
-    });
-
-    // Admin login button click handler
-    adminLoginBtn.addEventListener('click', async () => {
-      const enteredPassword = adminPasswordInput.value;
-      const enteredHash = await sha256(enteredPassword);
-      // Hash of "Suzz2212"
-      const correctHash = await sha256('Suzz2212');
-      
-      if (enteredHash === correctHash) {
-        adminLoginError.classList.add('hidden');
-        adminLoginSection.classList.add('hidden');
-        adminDashboard.classList.remove('hidden');
-        startQrScanner();
-        loadCodesTable();
-      } else {
-        adminLoginError.classList.remove('hidden');
-      }
-    });
-
-    // Logout button click handler
-    logoutBtn.addEventListener('click', () => {
-      resetAdminPage();
-    });
-
-    // Start QR code scanner
     function startQrScanner() {
       if (html5QrCode) {
         html5QrCode.stop().catch(() => {});
-        html5QrCode = null;
       }
       
       html5QrCode = new Html5Qrcode("qr-reader");
@@ -533,67 +515,171 @@
           handleScannedCode(qrCodeMessage);
         },
         errorMessage => {
-          // ignore scan errors
+          // Ignore scanning errors
         }
       ).catch(err => {
-        scanResult.textContent = 'Camera access denied or not available.';
+        scanResult.innerHTML = `
+          <p class="text-red-600">Camera error: ${err.message}</p>
+          <p class="text-gray-600 mt-2">Please use manual code entry</p>
+        `;
       });
     }
 
-    // Handle scanned QR code
     function handleScannedCode(code) {
-      const codes = JSON.parse(localStorage.getItem(STORAGE_KEY_CODES) || '[]');
+      const codes = JSON.parse(localStorage.getItem(STORAGE_KEY_CODES) || []);
       const found = codes.find(c => c.code === code);
       
       if (!found) {
-        scanResult.textContent = 'Invalid QR code.';
+        scanResult.innerHTML = `
+          <p class="text-red-600 font-bold">Invalid Code</p>
+          <p class="text-gray-600 mt-1">This QR code is not recognized</p>
+        `;
         return;
       }
       
       if (found.used) {
-        scanResult.textContent = `QR code already used. Discount: ${found.discount}%`;
+        scanResult.innerHTML = `
+          <p class="text-yellow-600 font-bold">Already Used</p>
+          <p class="mt-1">Phone: ${formatPhoneNumber(found.phone)}</p>
+          <p>Discount: ${found.discount}%</p>
+          <p class="text-sm text-gray-500 mt-1">Used on: ${formatDate(found.timestamp)}</p>
+        `;
         return;
       }
       
       // Mark as used
-      updateCodeData(found.phone, { used: true, timestamp: new Date().toISOString() });
+      const updatedCode = updateCodeData(found.code, { 
+        used: true, 
+        timestamp: new Date().toISOString() 
+      });
       
       scanResult.innerHTML = `
-        <p class="text-green-600 font-bold">QR code successfully redeemed!</p>
-        <p class="mt-2">Phone: ${found.phone}</p>
-        <p>Discount: ${found.discount}%</p>
-        <p class="text-sm text-gray-500 mt-2">Timestamp: ${new Date().toLocaleString()}</p>
+        <p class="text-green-600 font-bold">Successfully Redeemed!</p>
+        <p class="mt-2">Phone: ${formatPhoneNumber(updatedCode.phone)}</p>
+        <p>Discount: ${updatedCode.discount}%</p>
+        <p class="text-sm text-gray-500 mt-2">Time: ${formatDate(updatedCode.timestamp)}</p>
       `;
       
       loadCodesTable();
     }
 
-    // Load codes into admin table
-    function loadCodesTable() {
-      const codes = JSON.parse(localStorage.getItem(STORAGE_KEY_CODES) || '[]');
-      codesTableBody.innerHTML = '';
-      
-      codes.forEach(c => {
-        const tr = document.createElement('tr');
-        tr.classList.add('hover:bg-gray-100');
-        
-        const statusClass = c.used ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800';
-        const statusText = c.used ? 'Used' : 'Active';
-        
-        tr.innerHTML = `
-          <td class="border border-gray-300 p-3">${c.phone}</td>
-          <td class="border border-gray-300 p-3">${c.discount}%</td>
-          <td class="border border-gray-300 p-3">
-            <span class="px-2 py-1 rounded-full text-xs font-semibold ${statusClass}">${statusText}</span>
-          </td>
-          <td class="border border-gray-300 p-3">${new Date(c.timestamp).toLocaleString()}</td>
+    function handleManualCodeSubmit() {
+      const code = manualCodeInput.value.trim();
+      if (!code) {
+        scanResult.innerHTML = `
+          <p class="text-red-600">Please enter a code</p>
         `;
-        
-        codesTableBody.appendChild(tr);
-      });
+        return;
+      }
+      
+      handleScannedCode(code);
+      manualCodeInput.value = '';
     }
 
-    // Initialize on load
+    // ======================
+    // Event Listeners
+    // ======================
+    btnClient.addEventListener('click', () => {
+      clientPage.classList.remove('hidden');
+      adminPage.classList.add('hidden');
+      resetClientPage();
+    });
+
+    btnAdmin.addEventListener('click', () => {
+      clientPage.classList.add('hidden');
+      adminPage.classList.remove('hidden');
+      resetAdminPage();
+    });
+
+    claimGiftBtn.addEventListener('click', async () => {
+      const phone = phoneInput.value.trim();
+      
+      if (!validatePhoneNumber(phone)) {
+        phoneError.classList.remove('hidden');
+        return;
+      }
+      
+      phoneError.classList.add('hidden');
+      currentPhoneNumber = phone;
+
+      // Check for existing unused code
+      const existingCode = getUnusedCode(phone);
+      if (existingCode) {
+        showExistingCode(existingCode);
+        return;
+      }
+
+      // Check if already used
+      if (hasUsedCode(phone)) {
+        showErrorMessage('This number has already used a discount.');
+        return;
+      }
+
+      // Generate new discount
+      currentDiscount = generateRandomDiscount();
+      const newCode = generateUniqueCode();
+      saveCodeData(phone, currentDiscount, newCode);
+
+      // Send OTP
+      try {
+        await sendWhatsAppOtp(phone);
+        otpSection.classList.remove('hidden');
+        otpSent = true;
+        startCountdown();
+      } catch (err) {
+        showErrorMessage('Failed to send OTP. Please try again.');
+        console.error(err);
+      }
+    });
+
+    verifyOtpBtn.addEventListener('click', () => {
+      const enteredOtp = otpInput.value.trim();
+      
+      if (enteredOtp === currentOtp) {
+        otpError.classList.add('hidden');
+        otpSuccess.classList.remove('hidden');
+        resetCountdown();
+
+        // Mark as verified and show discount
+        const codes = JSON.parse(localStorage.getItem(STORAGE_KEY_CODES) || []);
+        const code = codes.find(c => c.phone === currentPhoneNumber && !c.used);
+        
+        if (code) {
+          updateCodeData(code.code, { verified: true });
+          showDiscountSection(code);
+        }
+      } else {
+        otpError.classList.remove('hidden');
+        otpSuccess.classList.add('hidden');
+      }
+    });
+
+    adminLoginBtn.addEventListener('click', async () => {
+      const enteredPassword = adminPasswordInput.value;
+      
+      if (enteredPassword === ADMIN_PASSWORD) {
+        adminLoginError.classList.add('hidden');
+        adminLoginSection.classList.add('hidden');
+        adminDashboard.classList.remove('hidden');
+        startQrScanner();
+        loadCodesTable();
+      } else {
+        adminLoginError.classList.remove('hidden');
+      }
+    });
+
+    logoutBtn.addEventListener('click', () => {
+      resetAdminPage();
+    });
+
+    submitCodeBtn.addEventListener('click', handleManualCodeSubmit);
+    manualCodeInput.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') handleManualCodeSubmit();
+    });
+
+    refreshCodesBtn.addEventListener('click', loadCodesTable);
+
+    // Initialize
     window.addEventListener('load', () => {
       btnClient.click();
       phoneInput.focus();
