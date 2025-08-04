@@ -11,14 +11,10 @@
   <!-- html5-qrcode CDN for scanning -->
   <script src="https://unpkg.com/html5-qrcode@2.3.7/minified/html5-qrcode.min.js"></script>
   <style>
-    /* CSS fallback for images */
     img {
       display: block;
       max-width: 100%;
       height: auto;
-    }
-    img.error-fallback {
-      content: url('https://placehold.co/600x400?text=Image+not+available&font=roboto&txtclr=555555');
     }
     .gradient-bg {
       background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
@@ -31,7 +27,7 @@
 <body class="gradient-bg min-h-screen flex flex-col">
 
   <!-- Logo -->
-  <img src="https://battbot.pythonanywhere.com/static/logo.jpg" 
+  <img src="/static/logo.jpg" 
        alt="Suzz Logo" 
        class="mx-auto my-4 w-40 md:w-56 lg:w-64 h-auto rounded-full shadow-lg border-4 border-white"
        onerror="this.src='https://placehold.co/600x400?text=Suzz+Logo&font=roboto&txtclr=555555'" />
@@ -51,7 +47,7 @@
       <h2 class="text-3xl font-semibold mb-4 text-center text-gray-800 font-serif">Welcome to Suzz!</h2>
       
       <!-- Coffee Cup Offer Image -->
-      <img src="https://battbot.pythonanywhere.com/static/coffee_offer.jpg" 
+      <img src="/static/coffee_offer.jpg" 
            alt="Special offer from Suzz" 
            class="mb-6 rounded-xl shadow-md w-full max-w-lg mx-auto h-auto object-cover"
            style="max-height: 300px;"
@@ -59,10 +55,10 @@
       
       <p class="mb-4 text-gray-700 text-center text-lg">Claim your special gift discount now!</p>
       <div class="mb-4">
-        <label for="phone-input" class="block mb-2 font-medium text-gray-800">Enter your phone number (without country code):</label>
+        <label for="phone-input" class="block mb-2 font-medium text-gray-800">Enter your phone number:</label>
         <input type="tel" id="phone-input" placeholder="e.g. 01012345678" 
                class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent" />
-        <p id="phone-error" class="text-red-600 mt-1 hidden">Please enter a valid phone number (10-15 digits).</p>
+        <p id="phone-error" class="text-red-600 mt-1 hidden">Please enter a valid Egyptian phone number (11 digits starting with 01)</p>
       </div>
       <button id="claim-gift-btn" class="w-full md:w-auto px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 focus:outline-none transition duration-300 shadow-md transform hover:scale-105">
         Claim Gift
@@ -209,6 +205,7 @@
     const STORAGE_KEY_CODES = 'suzz_codes';
     const STORAGE_KEY_VERIFIED_NUMBERS = 'suzz_verified_numbers';
 
+    // Green API credentials
     const GREEN_API_INSTANCE_ID = '7105288219';
     const GREEN_API_TOKEN = '47b3ca2c761240ebb523b770ad34bebd8ecb317db4d643d390';
 
@@ -220,10 +217,10 @@
     let html5QrCode = null;
     let countdownInterval = null;
 
-    // Helper: Validate phone number (basic digits only, length 10-15)
+    // Helper: Validate Egyptian phone number (11 digits starting with 01)
     function validatePhoneNumber(phone) {
       const digitsOnly = phone.replace(/\D/g, '');
-      return digitsOnly.length >= 10 && digitsOnly.length <= 15;
+      return digitsOnly.length === 11 && digitsOnly.startsWith('01');
     }
 
     // Helper: Generate random discount between 10% and 40% in 5% increments
@@ -236,7 +233,7 @@
       return min + (randIndex * step);
     }
 
-    // Helper: Generate unique code string (UUID v4 simplified)
+    // Helper: Generate unique code string
     function generateUniqueCode() {
       return 'xxxx-xxxx-xxxx'.replace(/x/g, function() {
         return Math.floor(Math.random() * 16).toString(16);
@@ -266,12 +263,6 @@
         codes[index] = { ...codes[index], ...updates };
         localStorage.setItem(STORAGE_KEY_CODES, JSON.stringify(codes));
       }
-    }
-
-    // Helper: Check if phone number has a code (used or unused)
-    function hasCode(phone) {
-      const codes = JSON.parse(localStorage.getItem(STORAGE_KEY_CODES) || '[]');
-      return codes.some(c => c.phone === phone);
     }
 
     // Helper: Check if phone number has an unused code
@@ -352,6 +343,88 @@
       }
     }
 
+    // Show existing unused code
+    function showExistingCode(code) {
+      existingCodeSection.classList.remove('hidden');
+      existingQrcodeContainer.innerHTML = '';
+      
+      QRCode.toCanvas(existingQrcodeContainer, code.code, function (error) {
+        if (error) console.error(error);
+      });
+    }
+
+    // Show discount section with QR code
+    function showDiscountSection() {
+      const codes = JSON.parse(localStorage.getItem(STORAGE_KEY_CODES) || '[]');
+      const codeData = codes.find(c => c.phone === currentPhoneNumber && !c.used);
+      
+      if (codeData) {
+        discountValue.textContent = codeData.discount + '%';
+        discountSection.classList.remove('hidden');
+        qrcodeContainer.innerHTML = '';
+        
+        QRCode.toCanvas(qrcodeContainer, codeData.code, function (error) {
+          if (error) console.error(error);
+        });
+      }
+      
+      otpSection.classList.add('hidden');
+    }
+
+    // Function to show an error message
+    function showErrorMessage(message) {
+      let errorDiv = document.getElementById('error-message');
+      if (!errorDiv) {
+        errorDiv = document.createElement('div');
+        errorDiv.id = 'error-message';
+        errorDiv.className = 'mt-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded-lg text-center';
+        clientPage.querySelector('section').prepend(errorDiv);
+      }
+      errorDiv.textContent = message;
+      errorDiv.style.display = 'block';
+    }
+
+    // Function to clear messages
+    function clearMessages() {
+      const errorDiv = document.getElementById('error-message');
+      if (errorDiv) {
+        errorDiv.style.display = 'none';
+      }
+    }
+
+    // Send WhatsApp OTP via Green API
+    async function sendWhatsAppOtp(phone) {
+      // Always use +20 for Egyptian numbers
+      const fullPhone = '+20' + phone.replace(/\D/g, '').substring(1);
+
+      // Generate 6-digit OTP
+      currentOtp = Math.floor(100000 + Math.random() * 900000).toString();
+
+      // Send message via Green API
+      const url = `https://api.green-api.com/waInstance${GREEN_API_INSTANCE_ID}/sendMessage/${GREEN_API_TOKEN}`;
+      const body = {
+        chatId: fullPhone + '@c.us',
+        message: `Your Suzz verification code is: ${currentOtp}`
+      };
+
+      try {
+        const response = await fetch(url, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(body)
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to send OTP via WhatsApp API');
+        }
+
+        return true;
+      } catch (error) {
+        console.error('Error sending WhatsApp OTP:', error);
+        throw error;
+      }
+    }
+
     // Claim Gift button click handler
     claimGiftBtn.addEventListener('click', async () => {
       clearMessages();
@@ -399,52 +472,6 @@
       }
     });
 
-    // Show existing unused code
-    function showExistingCode(code) {
-      existingCodeSection.classList.remove('hidden');
-      existingQrcodeContainer.innerHTML = '';
-      
-      QRCode.toCanvas(existingQrcodeContainer, code.code, function (error) {
-        if (error) console.error(error);
-      });
-    }
-
-    // Send WhatsApp OTP via Green API
-    async function sendWhatsAppOtp(phone) {
-      // Detect country code (default to +20 for Egypt)
-      const countryCode = detectCountryCode(phone) || '+20';
-      const fullPhone = countryCode + phone.replace(/\D/g, '');
-
-      // Generate 6-digit OTP
-      currentOtp = Math.floor(100000 + Math.random() * 900000).toString();
-
-      // Send message via Green API
-      const url = `https://api.green-api.com/waInstance${GREEN_API_INSTANCE_ID}/sendMessage/${GREEN_API_TOKEN}`;
-      const body = {
-        chatId: fullPhone + '@c.us',
-        message: `Your Suzz verification code is: ${currentOtp}`
-      };
-
-      const response = await fetch(url, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(body)
-      });
-
-      if (!response.ok) {
-        throw new Error('Green API request failed');
-      }
-    }
-
-    // Simple country code detection heuristic (Egypt focused)
-    function detectCountryCode(phone) {
-      // For Egyptian numbers starting with 01
-      if (phone.startsWith('01') && phone.length === 11) return '+20';
-      if (phone.startsWith('1') && phone.length === 10) return '+20';
-      if (phone.length === 10) return '+20'; // Default to Egypt
-      return '+20'; // Default
-    }
-
     // Verify OTP button click handler
     verifyOtpBtn.addEventListener('click', () => {
       clearMessages();
@@ -465,45 +492,6 @@
         otpSuccess.classList.add('hidden');
       }
     });
-
-    // Show discount section with QR code
-    function showDiscountSection() {
-      const codes = JSON.parse(localStorage.getItem(STORAGE_KEY_CODES) || '[]');
-      const codeData = codes.find(c => c.phone === currentPhoneNumber && !c.used);
-      
-      if (codeData) {
-        discountValue.textContent = codeData.discount + '%';
-        discountSection.classList.remove('hidden');
-        qrcodeContainer.innerHTML = '';
-        
-        QRCode.toCanvas(qrcodeContainer, codeData.code, function (error) {
-          if (error) console.error(error);
-        });
-      }
-      
-      otpSection.classList.add('hidden');
-    }
-
-    // Function to show an error message
-    function showErrorMessage(message) {
-      let errorDiv = document.getElementById('error-message');
-      if (!errorDiv) {
-        errorDiv = document.createElement('div');
-        errorDiv.id = 'error-message';
-        errorDiv.className = 'mt-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded-lg text-center';
-        clientPage.querySelector('section').prepend(errorDiv);
-      }
-      errorDiv.textContent = message;
-      errorDiv.style.display = 'block';
-    }
-
-    // Function to clear messages
-    function clearMessages() {
-      const errorDiv = document.getElementById('error-message');
-      if (errorDiv) {
-        errorDiv.style.display = 'none';
-      }
-    }
 
     // Admin login button click handler
     adminLoginBtn.addEventListener('click', async () => {
@@ -608,8 +596,6 @@
     // Initialize on load
     window.addEventListener('load', () => {
       btnClient.click();
-      
-      // Focus phone input on page load
       phoneInput.focus();
     });
   </script>
